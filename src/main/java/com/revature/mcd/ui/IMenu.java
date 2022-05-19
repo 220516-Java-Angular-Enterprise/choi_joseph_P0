@@ -1,4 +1,4 @@
-package com.revature.yolp.ui;
+package com.revature.mcd.ui;
 
 /* Interface for all of my menus to implement. */
 public interface IMenu {

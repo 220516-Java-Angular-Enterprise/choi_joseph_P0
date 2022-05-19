@@ -1,4 +1,4 @@
-package com.revature.yolp.models;
+package com.revature.mcd.models;
 
 public class User {
     private String id;
@@ -47,6 +47,10 @@ public class User {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public String toFileString() {
+        return id + ":" + username + ":" + password + ":" + role + "\n";
     }
 
     @Override
