@@ -18,7 +18,8 @@ public class UserService {
         this.userDAO = userDAO;
     }
 
-    public User login(String username, String password) {
+    // service to log-in and return valid credentials, returns null otherwise
+    public User loginService(String username, String password) {
         User user = userDAO.getUserByUsernameAndPassword(username, password);
 
         if (isValidCredentials(user)) return user;
@@ -26,16 +27,19 @@ public class UserService {
         return null;
     }
 
+    // service to register new users in database
     public void register(User user) {
         userDAO.save(user);
     }
 
+    // service for username validation based on specified regex
     public boolean isValidUsername(String username) {
         if (username.matches("^(?=[a-zA-Z0-9._]{8,20}$)(?!.*[_.]{2})[^_.].*[^_.]$")) return true;
 
         throw new InvalidUserException("Invalid username. Username needs to be 8-20 characters long.");
     }
 
+    // service to check duplicate usernames
     public boolean isNotDuplicateUsername(String username) {
         List<String> usernames = userDAO.getAllUsernames();
 
@@ -44,12 +48,14 @@ public class UserService {
         return true;
     }
 
+    // service for password validation based on specified regex
     public boolean isValidPassword(String password) {
         if (password.matches("^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,}$")) return true;
 
         throw new InvalidUserException("Invalid password. Minimum eight characters, at least one letter, one number and one special character.");
     }
 
+    // service for exceptions involving invalid credentials
     private boolean isValidCredentials(User user) {
 
         if (user.getUsername() == null && user.getPassword() == null) throw new InvalidUserException("Incorrect username and password.");

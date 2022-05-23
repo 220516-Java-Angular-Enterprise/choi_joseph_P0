@@ -44,13 +44,13 @@ public class StartMenu implements IMenu {
                     case "1":
                         /* Call the login() method. */
                         login();
-                        break;
+                        break exit;
                     case "2":
                         /* Call the signup() method. */
                         signup();
-                        break;
+                        break exit;
                     case "x":
-                        System.out.println("\nGoodbye!");
+                        System.out.println("\nThank you for shopping with MC & D!");
                         /* Breaking out of everything. */
                         break exit;
                     default:
@@ -61,22 +61,24 @@ public class StartMenu implements IMenu {
         }
     }
 
+    // Displays the initial menu
     private void displayWelcomeMsg() {
         /* Welcome message. */
-        System.out.println("\nWelcome to Yolp!");
-        System.out.println("[1] Login");
-        System.out.println("[2] Signup");
+        System.out.println("\nWelcome to Marshall, Carter & Dark!");
+        System.out.println("[1] Log-in");
+        System.out.println("[2] Sign-up");
         System.out.println("[x] Exit");
     }
 
+    // Log-in process for users
     private void login() {
         String username;
         String password;
-        User user = new User();
+        User user;
         Scanner scan = new Scanner(System.in);
 
         while (true) {
-            System.out.println("\nLogging in...");
+            System.out.println("\nEnter log-in credentials.");
             System.out.print("\nUsername: ");
             username = scan.nextLine();
 
@@ -84,9 +86,9 @@ public class StartMenu implements IMenu {
             password = scan.nextLine();
 
             try {
-                user = userService.login(username, password);
+                user = userService.loginService(username, password);
 
-                if (user.getRole().equals("ADMIN")) new AdminMenu().start();
+                if (user.getClearanceLevel().equals("ADMIN")) new AdminMenu().start();
                 else new MainMenu(user).start();
                 break;
             } catch (InvalidUserException e) {
@@ -95,6 +97,8 @@ public class StartMenu implements IMenu {
         }
     }
 
+
+    //sign-up a new user
     private void signup() {
         String username;
         String password;
@@ -107,7 +111,7 @@ public class StartMenu implements IMenu {
 
                 while (true) {
                     /* Asking user to enter in username. */
-                    System.out.print("\nUsername: ");
+                    System.out.print("\nEnter a username: ");
                     username = scan.nextLine();
 
                     /* If the username is valid break out of the loop. Else re-enter username. */
@@ -123,7 +127,7 @@ public class StartMenu implements IMenu {
 
                 while (true) {
                     /* Asking user to enter in password. */
-                    System.out.print("\nPassword: ");
+                    System.out.print("\nEnter a password: ");
                     password = scan.nextLine();
 
                     /* If the password is valid confirm the password again. Else re-enter password. */

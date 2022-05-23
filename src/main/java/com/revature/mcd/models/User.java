@@ -1,22 +1,26 @@
 package com.revature.mcd.models;
 
 public class User {
+
+    //region <attributes>
     private String id;
     private String username;
     private String password;
-    private String role;
+    private String clearanceLevel;
+    //endregion
 
-    public User() {
-        super();
-    }
+    //region <constructors>
+    public User() { }
 
-    public User(String id, String username, String password, String role) {
+    public User(String id, String username, String password, String clearanceLevel) {
         this.id = id;
         this.username = username;
         this.password = password;
-        this.role = role;
+        this.clearanceLevel = clearanceLevel;
     }
+    //endregion
 
+    //region <accessors and mutators>
     public String getId() {
         return id;
     }
@@ -41,24 +45,25 @@ public class User {
         this.password = password;
     }
 
-    public String getRole() {
-        return role;
+    public String getClearanceLevel() {
+        return clearanceLevel;
     }
 
-    public void setRole(String role) {
-        this.role = role;
+    public void setClearanceLevel(String clearanceLevel) {
+        this.clearanceLevel = clearanceLevel;
     }
+    //endregion
 
-    public String toFileString() {
-        return id + ":" + username + ":" + password + ":" + role + "\n";
-    }
-
+    //region <methods>
     @Override
     public String toString() {
         return "User{" +
                 "id='" + id + '\'' +
                 ", username='" + username + '\'' +
-                ", role='" + role + '\'' +
+                ", role='" + clearanceLevel + '\'' +
                 '}';
     }
+
+    public String toFileString() { return id + ":" + username + ":" + password + ":" + clearanceLevel + "\n"; }
+    //endregion
 }

@@ -7,8 +7,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserDAO implements CrudDAO<User> {
-    String path = "src/main/resources/database/user.txt";
 
+    //region <file paths>
+    String path = "src/main/resources/database/user.txt";
+    //endregion
+
+    //region <user manipulation: save, update, delete>
     @Override
     public void save(User obj) {
         try {
@@ -30,6 +34,7 @@ public class UserDAO implements CrudDAO<User> {
     public void delete(String id) {
 
     }
+    //endregion
 
     @Override
     public User getById(String id) {
@@ -41,6 +46,7 @@ public class UserDAO implements CrudDAO<User> {
         return null;
     }
 
+    // returns all usernames in database
     public List<String> getAllUsernames() {
         List<String> usernames = new ArrayList<>();
 
@@ -66,24 +72,25 @@ public class UserDAO implements CrudDAO<User> {
         return usernames;
     }
 
+    // returns a user based on parameter of username and password
     public User getUserByUsernameAndPassword(String un, String pw) {
         User user = new User();
 
         try {
             BufferedReader br = new BufferedReader(new FileReader(path));
 
-            String userData; // id:username:password:role
+            String userData; // id:username:password:clearanceLevel
             while ((userData = br.readLine()) != null) {
-                String[] userArr = userData.split(":"); // [id, username, password, role]
+                String[] userArr = userData.split(":"); // [id, username, password, clearanceLevel]
                 String id = userArr[0];
                 String username = userArr[1];
                 String password = userArr[2];
-                String role = userArr[3];
+                String clearanceLevel = userArr[3];
 
                 if (un.equals(username)) {
                     user.setId(id);
                     user.setUsername(username);
-                    user.setRole(role);
+                    user.setClearanceLevel(clearanceLevel);
 
                     if (pw.equals(password)) user.setPassword(password);
                     else break;
