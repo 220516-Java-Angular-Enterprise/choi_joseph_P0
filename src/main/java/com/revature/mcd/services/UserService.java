@@ -20,11 +20,25 @@ public class UserService {
 
     // service to log-in and return valid credentials, returns null otherwise
     public User loginService(String username, String password) {
-        User user = userDAO.getUserByUsernameAndPassword(username, password);
+        List<User> users = userDAO.getAll();
+        User user = new User();
 
-        if (isValidCredentials(user)) return user;
+        for(User u: users){
+            if(u.getUsername().equals(username)){
+                user.setId(u.getId());
+                user.setUsername(u.getUsername());
+                user.setFirstName(u.getFirstName());
+                user.setLastName(u.getLastName());
+                user.setClearanceLevel(u.getClearanceLevel());
 
-        return null;
+                if(u.getPassword().equals(password)){
+                    user.setPassword(u.getPassword());
+                    break;
+                }
+            }
+        }
+
+        return isValidCredentials(user);
     }
 
     // service to register new users in database
@@ -43,7 +57,7 @@ public class UserService {
     public boolean isNotDuplicateUsername(String username) {
         List<String> usernames = userDAO.getAllUsernames();
 
-        if (usernames.contains(username)) throw new InvalidUserException("Username is already taken :(");
+        if (usernames.contains(username)) throw new InvalidUserException("Username is already taken.");
 
         return true;
     }
@@ -56,12 +70,13 @@ public class UserService {
     }
 
     // service for exceptions involving invalid credentials
-    private boolean isValidCredentials(User user) {
+    private User isValidCredentials(User user) {
 
-        if (user.getUsername() == null && user.getPassword() == null) throw new InvalidUserException("Incorrect username and password.");
-        else if (user.getUsername() == null) throw new InvalidUserException("Incorrect username.");
-        else if (user.getPassword() == null) throw new InvalidUserException("Incorrect password.");
+        if (user.getUsername() == null)
+            throw new InvalidUserException("\nUsername does not exist.");
+        else if (user.getPassword() == null)
+            throw new InvalidUserException("\nPassword is incorrect. Please try again.");
 
-        return true;
+        return user;
     }
 }

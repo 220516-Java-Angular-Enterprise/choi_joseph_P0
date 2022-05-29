@@ -1,6 +1,8 @@
 package com.revature.mcd.ui;
 
+import com.revature.mcd.daos.ProductDAO;
 import com.revature.mcd.models.User;
+import com.revature.mcd.services.ProductService;
 import com.revature.mcd.services.UserService;
 import com.revature.mcd.util.annotations.Inject;
 import com.revature.mcd.util.custom_exceptions.InvalidUserException;
@@ -44,11 +46,11 @@ public class StartMenu implements IMenu {
                     case "1":
                         /* Call the login() method. */
                         login();
-                        break exit;
+                        break;
                     case "2":
                         /* Call the signup() method. */
                         signup();
-                        break exit;
+                        break;
                     case "x":
                         System.out.println("\nThank you for shopping with MC & D!");
                         /* Breaking out of everything. */
@@ -61,15 +63,6 @@ public class StartMenu implements IMenu {
         }
     }
 
-    // Displays the initial menu
-    private void displayWelcomeMsg() {
-        /* Welcome message. */
-        System.out.println("\nWelcome to Marshall, Carter & Dark!");
-        System.out.println("[1] Log-in");
-        System.out.println("[2] Sign-up");
-        System.out.println("[x] Exit");
-    }
-
     // Log-in process for users
     private void login() {
         String username;
@@ -78,41 +71,48 @@ public class StartMenu implements IMenu {
         Scanner scan = new Scanner(System.in);
 
         while (true) {
-            System.out.println("\nEnter log-in credentials.");
+            System.out.println("\nEnter log-in credentials, or enter \"x\" to exit.");
             System.out.print("\nUsername: ");
             username = scan.nextLine();
+            if(username.equals("x"))
+                break;
 
-            System.out.print("\nPassword: ");
+            System.out.print("Password: ");
             password = scan.nextLine();
 
             try {
-                user = userService.loginService(username, password);
+                    user = userService.loginService(username, password);
 
-                if (user.getClearanceLevel().equals("ADMIN")) new AdminMenu().start();
-                else new MainMenu(user).start();
-                break;
+                    if (user.getClearanceLevel()== 1) new AdminMenu(user, new ProductService(new ProductDAO())).start();
+                    else new MainMenu(user).start();
+                    break;
             } catch (InvalidUserException e) {
                 System.out.println(e.getMessage());
             }
         }
     }
 
-
     //sign-up a new user
-    private void signup() {
+    private  void signup() {
         String username;
         String password;
-        Scanner scan = new Scanner(System.in);
+        String firstName;
+        String lastName;
+
+        Scanner scanner = new Scanner(System.in);
 
         completeExit:
         {
             while (true) {
-                System.out.println("\nCreating account...");
+                System.out.println("\nCreating account. Enter \"x\" to exit at any time.");
 
                 while (true) {
                     /* Asking user to enter in username. */
                     System.out.print("\nEnter a username: ");
-                    username = scan.nextLine();
+                    username = scanner.nextLine();
+                    if(username.equals("x")){
+                        break completeExit;
+                    }
 
                     /* If the username is valid break out of the loop. Else re-enter username. */
                     try {
@@ -128,22 +128,39 @@ public class StartMenu implements IMenu {
                 while (true) {
                     /* Asking user to enter in password. */
                     System.out.print("\nEnter a password: ");
-                    password = scan.nextLine();
+                    password = scanner.nextLine();
+                    if(password.equals("x")){
+                        break completeExit;
+                    }
 
                     /* If the password is valid confirm the password again. Else re-enter password. */
                     try {
                         if (userService.isValidPassword(password)) {
                             /* Asking user to enter in password again. */
                             System.out.print("\nRe enter password again: ");
-                            String confirm = scan.nextLine();
+                            String confirm = scanner.nextLine();
+                            if(confirm.equals("x")){
+                                break completeExit;
+                            }
 
-                            /* If the two password equals each other, break. Else re-enter password. */
+                            /* If the two passwords equal each other, break. Else re-enter password. */
                             if (password.equals(confirm)) break;
-                            else System.out.println("Password does not match :(");
+                            else System.out.println("Passwords do not match.");
                         }
                     } catch (InvalidUserException e) {
                         System.out.println(e.getMessage());
                     }
+                }
+                // Get user's first and last name
+                System.out.print("\nEnter your first name: ");
+                firstName = scanner.nextLine();
+                if(firstName.equals("x")){
+                    break completeExit;
+                }
+                System.out.print("\nEnter your last name: ");
+                lastName = scanner.nextLine();
+                if(lastName.equals("x")){
+                    break completeExit;
                 }
 
                 confirmExit:
@@ -153,15 +170,19 @@ public class StartMenu implements IMenu {
                         System.out.println("\nPlease confirm your credentials (y/n)");
                         System.out.println("\nUsername: " + username);
                         System.out.println("Password: " + password);
+                        System.out.println("First Name: " + firstName);
+                        System.out.println("Last Name: " + lastName);
 
                         System.out.print("\nEnter: ");
-                        String input = scan.nextLine();
+                        String input = scanner.nextLine();
 
                         /* Switch statement for user input. Basically yes or no. */
                         switch (input) {
                             case "y":
                                 /* If yes, we instantiate a User object to store all the information into it. */
-                                User user = new User(UUID.randomUUID().toString(), username, password, "DEFAULT");
+                                User user = new User(UUID.randomUUID().toString(), username,
+                                        password, firstName,
+                                        lastName, 0);
 
                                 userService.register(user);
 
@@ -182,5 +203,14 @@ public class StartMenu implements IMenu {
                 }
             }
         }
+    }
+
+    // Displays the initial menu
+    private void displayWelcomeMsg() {
+        /* Welcome message. */
+        System.out.println("\nWelcome to Marshall, Carter & Dark!");
+        System.out.println("[1] Log-in");
+        System.out.println("[2] Sign-up");
+        System.out.println("[x] Exit");
     }
 }

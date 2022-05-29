@@ -6,16 +6,20 @@ public class User {
     private String id;
     private String username;
     private String password;
-    private String clearanceLevel;
+    private String firstName;
+    private String lastName;
+    private int clearanceLevel;
     //endregion
 
     //region <constructors>
     public User() { }
 
-    public User(String id, String username, String password, String clearanceLevel) {
+    public User(String id, String username, String password, String firstName, String lastName, int clearanceLevel) {
         this.id = id;
         this.username = username;
         this.password = password;
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.clearanceLevel = clearanceLevel;
     }
     //endregion
@@ -45,11 +49,27 @@ public class User {
         this.password = password;
     }
 
-    public String getClearanceLevel() {
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public int getClearanceLevel() {
         return clearanceLevel;
     }
 
-    public void setClearanceLevel(String clearanceLevel) {
+    public void setClearanceLevel(int clearanceLevel) {
         this.clearanceLevel = clearanceLevel;
     }
     //endregion
@@ -63,7 +83,5 @@ public class User {
                 ", role='" + clearanceLevel + '\'' +
                 '}';
     }
-
-    public String toFileString() { return id + ":" + username + ":" + password + ":" + clearanceLevel + "\n"; }
     //endregion
 }
