@@ -1,7 +1,10 @@
 package com.revature.mcd.ui;
 
 import com.revature.mcd.daos.ProductDAO;
+import com.revature.mcd.daos.UserDAO;
+import com.revature.mcd.models.Location;
 import com.revature.mcd.models.User;
+import com.revature.mcd.services.LocationService;
 import com.revature.mcd.services.ProductService;
 import com.revature.mcd.services.UserService;
 import com.revature.mcd.util.annotations.Inject;
@@ -19,10 +22,13 @@ public class StartMenu implements IMenu {
     /* This is why we are using dependency injection. */
     @Inject
     private final UserService userService;
+    @Inject
+    private final LocationService locationService;
 
     @Inject
-    public StartMenu(UserService userService) {
+    public StartMenu(UserService userService, LocationService locationService) {
         this.userService = userService;
+        this.locationService = locationService;
     }
 
     @Override
@@ -83,7 +89,10 @@ public class StartMenu implements IMenu {
             try {
                     user = userService.loginService(username, password);
 
-                    if (user.getClearanceLevel()== 1) new AdminMenu(user, new ProductService(new ProductDAO())).start();
+                    if (user.getClearanceLevel() > 0)
+                        new AdminMenu(user,
+                                new UserService(new UserDAO()),
+                                new ProductService(new ProductDAO())).start();
                     else new MainMenu(user).start();
                     break;
             } catch (InvalidUserException e) {
@@ -98,6 +107,8 @@ public class StartMenu implements IMenu {
         String password;
         String firstName;
         String lastName;
+        String country;
+        String city;
 
         Scanner scanner = new Scanner(System.in);
 
@@ -127,7 +138,7 @@ public class StartMenu implements IMenu {
 
                 while (true) {
                     /* Asking user to enter in password. */
-                    System.out.print("\nEnter a password: ");
+                    System.out.print("Enter a password: ");
                     password = scanner.nextLine();
                     if(password.equals("x")){
                         break completeExit;
@@ -137,7 +148,7 @@ public class StartMenu implements IMenu {
                     try {
                         if (userService.isValidPassword(password)) {
                             /* Asking user to enter in password again. */
-                            System.out.print("\nRe enter password again: ");
+                            System.out.print("Re enter password again: ");
                             String confirm = scanner.nextLine();
                             if(confirm.equals("x")){
                                 break completeExit;
@@ -152,14 +163,26 @@ public class StartMenu implements IMenu {
                     }
                 }
                 // Get user's first and last name
-                System.out.print("\nEnter your first name: ");
+                System.out.print("Enter your first name: ");
                 firstName = scanner.nextLine();
                 if(firstName.equals("x")){
                     break completeExit;
                 }
-                System.out.print("\nEnter your last name: ");
+                System.out.print("Enter your last name: ");
                 lastName = scanner.nextLine();
                 if(lastName.equals("x")){
+                    break completeExit;
+                }
+                // Get user's country and city
+                System.out.print("Enter your country of residence: ");
+                country = scanner.nextLine();
+                if(country.equals("x")){
+                    break completeExit;
+                }
+
+                System.out.print("Enter your city of residence: ");
+                city = scanner.nextLine();
+                if(city.equals("x")){
                     break completeExit;
                 }
 
@@ -172,6 +195,8 @@ public class StartMenu implements IMenu {
                         System.out.println("Password: " + password);
                         System.out.println("First Name: " + firstName);
                         System.out.println("Last Name: " + lastName);
+                        System.out.println("Country: " + country);
+                        System.out.println("City: " + city);
 
                         System.out.print("\nEnter: ");
                         String input = scanner.nextLine();
@@ -179,12 +204,31 @@ public class StartMenu implements IMenu {
                         /* Switch statement for user input. Basically yes or no. */
                         switch (input) {
                             case "y":
+                                User user = new User();
                                 /* If yes, we instantiate a User object to store all the information into it. */
-                                User user = new User(UUID.randomUUID().toString(), username,
-                                        password, firstName,
-                                        lastName, 0);
+                               if(locationService.isExistingLocation(country, city)){
+                                   user.setId(UUID.randomUUID().toString());
+                                   user.setUsername(username);
+                                   user.setPassword(password);
+                                   user.setFirstName(firstName);
+                                   user.setLastName(lastName);
+                                   user.setClearanceLevel(0);
+                                   user.setLocation_id(locationService.getLocation(country, city).getId());
+                               }
+                               else{
+                                   Location location = new Location(UUID.randomUUID().toString(), country, city);
+                                   locationService.addLocation(location);
 
-                                userService.register(user);
+                                   user.setId(UUID.randomUUID().toString());
+                                   user.setUsername(username);
+                                   user.setPassword(password);
+                                   user.setFirstName(firstName);
+                                   user.setLastName(lastName);
+                                   user.setClearanceLevel(0);
+                                   user.setLocation_id(location.getId());
+                               }
+
+                               userService.register(user);
 
                                 /* Calling the anonymous class MainMenu.start() to navigate to the main menu screen. */
                                 /* We are also passing in a user object, so we know who is logged in. */

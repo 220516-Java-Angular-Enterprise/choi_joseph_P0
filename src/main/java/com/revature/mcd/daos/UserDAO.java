@@ -18,14 +18,15 @@ public class UserDAO implements CrudDAO<User> {
     public void save(User obj) {
         try {
             PreparedStatement ps = con.prepareStatement("INSERT INTO " +
-                    "users(id, userName, userPassword, firstName, lastName, securityLevel)" +
-                    "VALUES(?, ?, ?, ?, ?, ?)");
+                    "users(id, userName, userPassword, firstName, lastName, securityLevel, location_id)" +
+                    "VALUES(?, ?, ?, ?, ?, ?, ?)");
             ps.setString(1, obj.getId());
             ps.setString(2, obj.getUsername());
             ps.setString(3, obj.getPassword());
             ps.setString(4, obj.getFirstName());
             ps.setString(5, obj.getLastName());
             ps.setInt(6, obj.getClearanceLevel());
+            ps.setString(7, obj.getLocation_id());
             ps.executeUpdate();
 
         } catch (SQLException e) {
@@ -35,7 +36,19 @@ public class UserDAO implements CrudDAO<User> {
 
     @Override
     public void update(User obj) {
+        try{
+            PreparedStatement ps = con.prepareStatement("UPDATE users " +
+                    "SET userName = ?, userPassword = ?, firstName = ?, lastName = ?, securityLevel = ?");
+            ps.setString(1, obj.getUsername());
+            ps.setString(2, obj.getPassword());
+            ps.setString(3, obj.getFirstName());
+            ps.setString(4, obj.getLastName());
+            ps.setInt(5, obj.getClearanceLevel());
+            ps.executeUpdate();
 
+        } catch(SQLException e){
+            throw new RuntimeException("An error occurred while trying to update the database.");
+        }
     }
 
     @Override
@@ -51,6 +64,7 @@ public class UserDAO implements CrudDAO<User> {
     }
 
     @Override
+    // returns a List of all Users
     public List<User> getAll() {
         List<User> users = new ArrayList<>();
         try{
@@ -62,7 +76,8 @@ public class UserDAO implements CrudDAO<User> {
                         rs.getString("userPassword"),
                         rs.getString("firstName"),
                         rs.getString("lastName"),
-                        rs.getInt("securityLevel")
+                        rs.getInt("securityLevel"),
+                        rs.getString("location_id")
                         );
 
                 users.add(user);

@@ -9,18 +9,21 @@ public class User {
     private String firstName;
     private String lastName;
     private int clearanceLevel;
+    private String location_id;
     //endregion
 
     //region <constructors>
     public User() { }
 
-    public User(String id, String username, String password, String firstName, String lastName, int clearanceLevel) {
+    public User(String id, String username, String password, String firstName, String lastName,
+                int clearanceLevel, String location_id) {
         this.id = id;
         this.username = username;
         this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
         this.clearanceLevel = clearanceLevel;
+        this.location_id = location_id;
     }
     //endregion
 
@@ -72,6 +75,15 @@ public class User {
     public void setClearanceLevel(int clearanceLevel) {
         this.clearanceLevel = clearanceLevel;
     }
+
+    public String getLocation_id() {
+        return location_id;
+    }
+
+    public void setLocation_id(String location_id) {
+        this.location_id = location_id;
+    }
+
     //endregion
 
     //region <methods>

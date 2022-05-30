@@ -69,6 +69,28 @@ public class UserService {
         throw new InvalidUserException("Invalid password. Minimum eight characters, at least one letter, one number and one special character.");
     }
 
+    // service to find existing user in database by username
+    public User findUserByUsername(String username){
+        List<User> users = userDAO.getAll();
+        User user = new User();
+        for(User u: users){
+            if(u.getUsername().equals(username)){
+                user.setId(u.getId());
+                user.setUsername(u.getUsername());
+                user.setPassword(u.getPassword());
+                user.setFirstName(u.getFirstName());
+                user.setLastName(u.getLastName());
+                user.setClearanceLevel(u.getClearanceLevel());
+                return user;
+            }
+        }
+        return null;
+    }
+
+    public void changeUserInfo(User user){
+        userDAO.update(user);
+    }
+
     // service for exceptions involving invalid credentials
     private User isValidCredentials(User user) {
 

@@ -1,6 +1,8 @@
 package com.revature.mcd;
 
+import com.revature.mcd.daos.LocationDAO;
 import com.revature.mcd.daos.UserDAO;
+import com.revature.mcd.services.LocationService;
 import com.revature.mcd.services.UserService;
 import com.revature.mcd.ui.StartMenu;
 
@@ -10,6 +12,6 @@ public class Main {
 
         /* anonymous function. */
         /* This anonymous function will disappear after the start method is done executing. */
-        new StartMenu(new UserService(new UserDAO())).start();
+        new StartMenu(new UserService(new UserDAO()), new LocationService(new LocationDAO())).start();
     }
 }
