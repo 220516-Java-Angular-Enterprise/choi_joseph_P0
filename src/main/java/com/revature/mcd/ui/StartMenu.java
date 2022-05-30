@@ -1,5 +1,6 @@
 package com.revature.mcd.ui;
 
+import com.revature.mcd.daos.LocationDAO;
 import com.revature.mcd.daos.ProductDAO;
 import com.revature.mcd.daos.UserDAO;
 import com.revature.mcd.models.Location;
@@ -92,7 +93,8 @@ public class StartMenu implements IMenu {
                     if (user.getClearanceLevel() > 0)
                         new AdminMenu(user,
                                 new UserService(new UserDAO()),
-                                new ProductService(new ProductDAO())).start();
+                                new ProductService(new ProductDAO()),
+                                new LocationService(new LocationDAO())).start();
                     else new MainMenu(user).start();
                     break;
             } catch (InvalidUserException e) {

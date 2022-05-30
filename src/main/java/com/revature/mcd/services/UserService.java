@@ -1,6 +1,7 @@
 package com.revature.mcd.services;
 
 import com.revature.mcd.daos.UserDAO;
+import com.revature.mcd.models.Location;
 import com.revature.mcd.models.User;
 import com.revature.mcd.util.annotations.Inject;
 import com.revature.mcd.util.custom_exceptions.InvalidUserException;
@@ -30,6 +31,7 @@ public class UserService {
                 user.setFirstName(u.getFirstName());
                 user.setLastName(u.getLastName());
                 user.setClearanceLevel(u.getClearanceLevel());
+                user.setLocation_id(u.getLocation_id());
 
                 if(u.getPassword().equals(password)){
                     user.setPassword(u.getPassword());
@@ -81,6 +83,7 @@ public class UserService {
                 user.setFirstName(u.getFirstName());
                 user.setLastName(u.getLastName());
                 user.setClearanceLevel(u.getClearanceLevel());
+                user.setLocation_id(u.getLocation_id());
                 return user;
             }
         }

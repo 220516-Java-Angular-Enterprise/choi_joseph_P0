@@ -2,6 +2,7 @@ package com.revature.mcd.services;
 
 import com.revature.mcd.daos.LocationDAO;
 import com.revature.mcd.models.Location;
+import com.revature.mcd.models.User;
 import com.revature.mcd.util.annotations.Inject;
 
 import java.util.ArrayList;
@@ -25,6 +26,11 @@ public class LocationService {
             }
         }
         return false;
+    }
+
+    //get location object by user
+    public Location getLocation(User user){
+        return locationDAO.getById(user.getLocation_id());
     }
 
     // get location object by country and city

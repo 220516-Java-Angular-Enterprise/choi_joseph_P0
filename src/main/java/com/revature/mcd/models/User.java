@@ -92,8 +92,12 @@ public class User {
         return "User{" +
                 "id='" + id + '\'' +
                 ", username='" + username + '\'' +
-                ", role='" + clearanceLevel + '\'' +
+                ", password='" + password + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", clearanceLevel=" + clearanceLevel +
+                ", location_id='" + location_id + '\'' +
                 '}';
     }
-    //endregion
+//endregion
 }

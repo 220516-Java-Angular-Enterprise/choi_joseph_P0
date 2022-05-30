@@ -38,12 +38,16 @@ public class UserDAO implements CrudDAO<User> {
     public void update(User obj) {
         try{
             PreparedStatement ps = con.prepareStatement("UPDATE users " +
-                    "SET userName = ?, userPassword = ?, firstName = ?, lastName = ?, securityLevel = ?");
+                    "SET userName = ?, userPassword = ?, firstName = ?, lastName = ?, " +
+                    "securityLevel = ?, location_id = ? " +
+                    "WHERE id = ?");
             ps.setString(1, obj.getUsername());
             ps.setString(2, obj.getPassword());
             ps.setString(3, obj.getFirstName());
             ps.setString(4, obj.getLastName());
             ps.setInt(5, obj.getClearanceLevel());
+            ps.setString(6, obj.getLocation_id());
+            ps.setString(7, obj.getId());
             ps.executeUpdate();
 
         } catch(SQLException e){

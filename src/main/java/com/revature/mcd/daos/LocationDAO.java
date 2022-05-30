@@ -32,7 +32,18 @@ public class LocationDAO implements CrudDAO<Location> {
 
     @Override
     public void update(Location obj) {
+        try{
+            PreparedStatement ps = con.prepareStatement("UPDATE locations " +
+                    "SET country = ?, city = ? " +
+                    "WHERE id = ?");
+            ps.setString(1, obj.getCountry());
+            ps.setString(2, obj.getCity());
+            ps.setString(3, obj.getId());
+            ps.executeUpdate();
 
+        } catch(SQLException e){
+            throw new RuntimeException("An error occurred while trying to update the database.");
+        }
 
     }
 
@@ -44,7 +55,22 @@ public class LocationDAO implements CrudDAO<Location> {
 
     @Override
     public Location getById(String id) {
-        return null;
+        Location location = new Location();
+        try{
+            PreparedStatement ps = con.prepareStatement("SELECT * FROM locations " +
+                    "WHERE id = ?");
+            ps.setString(1, id);
+            ResultSet rs = ps.executeQuery();
+
+            while(rs.next()){
+                location.setId(rs.getString("id"));
+                location.setCountry(rs.getString("country"));
+                location.setCity(rs.getString("city"));
+            }
+        } catch(SQLException e){
+            throw new RuntimeException("An error occurred while trying to get location by ID.");
+        }
+        return location;
     }
 
     @Override
