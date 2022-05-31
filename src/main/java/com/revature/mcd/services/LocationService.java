@@ -4,8 +4,6 @@ import com.revature.mcd.daos.LocationDAO;
 import com.revature.mcd.models.Location;
 import com.revature.mcd.models.User;
 import com.revature.mcd.util.annotations.Inject;
-
-import java.util.ArrayList;
 import java.util.List;
 
 public class LocationService {

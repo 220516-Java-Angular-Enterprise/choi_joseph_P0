@@ -93,7 +93,6 @@ public class StartMenu implements IMenu {
                     if (user.getClearanceLevel() > 0)
                         new AdminMenu(user,
                                 new UserService(new UserDAO()),
-                                new ProductService(new ProductDAO()),
                                 new LocationService(new LocationDAO())).start();
                     else new MainMenu(user).start();
                     break;

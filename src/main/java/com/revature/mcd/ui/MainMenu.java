@@ -1,6 +1,8 @@
 package com.revature.mcd.ui;
 
+import com.revature.mcd.daos.*;
 import com.revature.mcd.models.User;
+import com.revature.mcd.services.*;
 import com.revature.mcd.util.annotations.Inject;
 
 import java.util.Scanner;
@@ -25,9 +27,14 @@ public class MainMenu implements IMenu {
                 String input = scanner.nextLine();
                 switch (input){
                     case "1":
-                        break exit;
+                        new CatalogMenu(user, new ProductService(new ProductDAO()),
+                                new CartService(new CartDAO()), new CartProductService(new CartProductDAO())).start();
+                        break;
                     case "2":
-                        break exit;
+                        new CartMenu(user, new ProductService(new ProductDAO()),
+                                new CartService(new CartDAO()), new CartProductService(new CartProductDAO()),
+                                new OrderService(new OrderDAO()), new SupplierOrderService(new SupplierOrderDAO())).start();
+                        break;
                     case "3":
                         break exit;
                     case "4":
@@ -50,9 +57,5 @@ public class MainMenu implements IMenu {
         System.out.println("[3] Update Account Details");
         System.out.println("[4] View Order History");
         System.out.println("[x] Exit to Log-in Menu");
-    }
-
-    private void browseProducts(){
-        System.out.println("\nBrowse our excellent selection of anomalous items!");
     }
 }
