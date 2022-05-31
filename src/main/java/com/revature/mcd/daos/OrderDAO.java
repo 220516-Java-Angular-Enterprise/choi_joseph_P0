@@ -3,10 +3,8 @@ package com.revature.mcd.daos;
 import com.revature.mcd.models.Order;
 import com.revature.mcd.util.database.DatabaseConnection;
 
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class OrderDAO implements CrudDAO<Order>{
@@ -41,11 +39,50 @@ public class OrderDAO implements CrudDAO<Order>{
 
     @Override
     public Order getById(String id) {
-        return null;
+        Order order = new Order();
+        try{
+            PreparedStatement ps = con.prepareStatement("SELECT * FROM orders " +
+                    "WHERE id = ?");
+            ps.setString(1, id);
+            ResultSet rs = ps.executeQuery();
+
+            while(rs.next()){
+                order.setId(rs.getString("id"));
+                order.setOrderDate(rs.getDate("orderDate"));
+                order.setOrderCost(rs.getBigDecimal("orderCost"));
+                order.setUser_id(rs.getString("user_id"));
+            }
+        } catch(SQLException e){
+            throw new RuntimeException("An error occurred while trying to get order by ID.");
+        }
+        return order;
     }
 
     @Override
     public List getAll() {
         return null;
+    }
+
+    public List<Order> getOrdersByUserID(String id){
+        List<Order> orders = new ArrayList<>();
+        try{
+            PreparedStatement ps = con.prepareStatement("SELECT * FROM orders " +
+                    "WHERE user_id = ?");
+            ps.setString(1, id);
+            ResultSet rs = ps.executeQuery();
+
+            while(rs.next()){
+                Order order = new Order();
+                order.setId(rs.getString("id"));
+                order.setOrderDate(rs.getDate("orderDate"));
+                order.setOrderCost(rs.getBigDecimal("orderCost"));
+                order.setUser_id(rs.getString("user_id"));
+
+                orders.add(order);
+            }
+        } catch(SQLException e){
+            throw new RuntimeException("An error occurred while trying to get a user's order history.");
+        }
+        return orders;
     }
 }

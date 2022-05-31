@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class SupplierDAO implements CrudDAO<Supplier>{
@@ -62,6 +63,18 @@ public class SupplierDAO implements CrudDAO<Supplier>{
 
     @Override
     public List<Supplier> getAll() {
-        return null;
+        List<Supplier> suppliers = new ArrayList<>();
+        try{
+            PreparedStatement ps = con.prepareStatement("SELECT * FROM suppliers");
+            ResultSet rs = ps.executeQuery();
+
+            while(rs.next()){
+                Supplier supplier = new Supplier(rs.getString("id"), rs.getString("supplierName"));
+                suppliers.add(supplier);
+            }
+        } catch(SQLException e){
+            throw new RuntimeException("An error occurred while getting all suppliers from the database.");
+        }
+        return suppliers;
     }
 }

@@ -94,6 +94,10 @@ public class UserService {
         userDAO.update(user);
     }
 
+    public User getByID(String id){
+        return userDAO.getById(id);
+    }
+
     // service for exceptions involving invalid credentials
     private User isValidCredentials(User user) {
 

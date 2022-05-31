@@ -1,5 +1,6 @@
 package com.revature.mcd.daos;
 
+import com.revature.mcd.models.Order;
 import com.revature.mcd.models.User;
 import com.revature.mcd.util.database.DatabaseConnection;
 
@@ -64,7 +65,26 @@ public class UserDAO implements CrudDAO<User> {
     //region <methods>
     @Override
     public User getById(String id) {
-        return null;
+        User user = new User();
+        try{
+            PreparedStatement ps = con.prepareStatement("SELECT * FROM users " +
+                    "WHERE id = ?");
+            ps.setString(1, id);
+            ResultSet rs = ps.executeQuery();
+
+            while(rs.next()){
+                user.setId(rs.getString("id"));
+                user.setUsername(rs.getString("userName"));
+                user.setPassword(rs.getString("userPassword"));
+                user.setFirstName(rs.getString("firstName"));
+                user.setLastName(rs.getString("lastName"));
+                user.setClearanceLevel(rs.getInt("securityLevel"));
+                user.setLocation_id(rs.getString("location_id"));
+            }
+        } catch(SQLException e){
+            throw new RuntimeException("An error occurred while trying to get order by ID.");
+        }
+        return user;
     }
 
     @Override

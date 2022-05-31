@@ -1,23 +1,26 @@
 package com.revature.mcd.ui;
 
-import com.revature.mcd.models.Product;
-import com.revature.mcd.models.Supplier;
-import com.revature.mcd.services.ProductService;
-import com.revature.mcd.services.SupplierService;
+import com.revature.mcd.models.*;
+import com.revature.mcd.services.*;
 import com.revature.mcd.util.annotations.Inject;
 
 import java.math.BigDecimal;
-import java.util.List;
-import java.util.Scanner;
-import java.util.UUID;
+import java.util.*;
 
 public class SupplierMenu implements IMenu{
     @Inject
+    private final UserService userService;
     private final SupplierService supplierService;
     private final ProductService productService;
-    public SupplierMenu(SupplierService supplierService, ProductService productService){
+    private final OrderService orderService;
+    private final SupplierOrderService supplierOrderService;
+    public SupplierMenu(UserService userService, SupplierService supplierService, ProductService productService,
+                        OrderService orderService, SupplierOrderService supplierOrderService){
+        this.userService = userService;
         this.supplierService = supplierService;
         this.productService = productService;
+        this.orderService = orderService;
+        this.supplierOrderService = supplierOrderService;
     }
 
     @Override
@@ -26,6 +29,11 @@ public class SupplierMenu implements IMenu{
         exit:
         {
             while(true){
+                List<Supplier> suppliers = supplierService.getAll();
+                System.out.println("\nSuppliers: ");
+                for(Supplier s: suppliers){
+                    System.out.println(s);
+                }
                 displayInitialMsg();
                 System.out.print("Enter: ");
                 String input = scanner.nextLine();
@@ -67,14 +75,17 @@ public class SupplierMenu implements IMenu{
             System.out.println("[2] View Order History");
             System.out.println("[x] Exit");
 
+            System.out.print("Enter: ");
             Scanner scanner = new Scanner(System.in);
             String input = scanner.nextLine();
+
             while(true){
                 switch(input){
                     case "1":
                         updateInventory(supplier);
                         break exit;
                     case "2":
+                        viewOrderHistory(supplier);
                     case "x":
                         break exit;
                     default:
@@ -84,6 +95,7 @@ public class SupplierMenu implements IMenu{
             }
         }
     }
+
     //endregion
 
     private Supplier findSupplier(){
@@ -110,7 +122,7 @@ public class SupplierMenu implements IMenu{
         Scanner scanner = new Scanner(System.in);
 
         if(!products.isEmpty()){
-            System.out.println("\n" + supplier.getSupplierName() + "\'s Inventory: \n");
+            System.out.println("\n" + supplier.getSupplierName() + "'s Inventory: \n");
             for(Product product: products){
                 System.out.println(product + "\n");
             }
@@ -132,8 +144,16 @@ public class SupplierMenu implements IMenu{
                                 String name = scanner.nextLine();
                                 System.out.print("Enter Product Price: ");
                                 BigDecimal price = BigDecimal.valueOf(Double.parseDouble(scanner.nextLine()));
+                                while(price.compareTo(BigDecimal.valueOf(0)) < 0){
+                                    System.out.print("Stock must be 0 or Greater: ");
+                                    price = BigDecimal.valueOf(Double.parseDouble(scanner.nextLine()));
+                                }
                                 System.out.print("Enter Product Stock: ");
                                 int stock = Integer.parseInt(scanner.nextLine());
+                                while(stock < 0){
+                                    System.out.print("Stock must be 0 or Greater: ");
+                                    stock = Integer.parseInt(scanner.nextLine());
+                                }
                                 System.out.print("Enter Product Description: ");
                                 String description = scanner.nextLine();
                                 Product product = new Product(id, name, price, stock, description, supplier.getId());
@@ -162,13 +182,17 @@ public class SupplierMenu implements IMenu{
                                     while(true){
                                         try{
                                             int stock = Integer.parseInt(scanner.nextLine());
+                                            while(stock < 0){
+                                                System.out.print("Stock must be 0 or Greater: ");
+                                                stock = Integer.parseInt(scanner.nextLine());
+                                            }
                                             product.setStock(stock);
                                             productService.updateInventory(product);
                                             System.out.println("Stock of " + product.getId() + " updated.");
                                             break stockExit;
                                         } catch(NumberFormatException e){
                                             System.out.println("Invalid input.");
-                                            break stockExit;
+                                            break;
                                         }
                                     }
                                 }
@@ -225,5 +249,56 @@ public class SupplierMenu implements IMenu{
             }
         }
 
+    }
+
+    private void viewOrderHistory(Supplier supplier) {
+        Scanner scanner = new Scanner(System.in);
+        List<SupplierOrder> supplierorders = supplierOrderService.getAllBySupplierID(supplier.getId());
+        List<Order> orders = new ArrayList<>();
+
+        for(SupplierOrder so: supplierorders){
+            orders.add(orderService.getOrderByID(so.getOrder_id()));
+        }
+
+        sortExit:{
+            while(true){
+                System.out.println("\nSort By: ");
+                System.out.println("[1] Date");
+                System.out.println("[2] Cost");
+                System.out.print("Enter: ");
+                String input = scanner.nextLine();
+                switch(input){
+                    case "1":
+                        orders.sort(new DateComparator());
+                        break sortExit;
+                    case "2":
+                        orders.sort(new CostComparator());
+                        break sortExit;
+                    default:
+                        System.out.println("Invalid input.");
+                        break;
+                }
+            }
+        }
+
+        System.out.println("\nViewing " + supplier.getSupplierName() + "'s Order History: ");
+        for(Order order: orders){
+            System.out.println("\nUser: " + userService.getByID(order.getUser_id()).getUsername());
+            System.out.println(order);
+        }
+        exit:{
+            while(true){
+                System.out.println("Enter \"x\" to exit.");
+                System.out.print("Enter: ");
+                String input = scanner.nextLine();
+                switch(input){
+                    case "x":
+                        break exit;
+                    default:
+                        System.out.println("Invalid Input.");
+                        break;
+                }
+            }
+        }
     }
 }

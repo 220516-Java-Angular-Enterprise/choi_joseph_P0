@@ -2,6 +2,7 @@ package com.revature.mcd.models;
 
 import java.math.BigDecimal;
 import java.sql.Date;
+import java.util.Comparator;
 
 public class Order {
     //region <attributes>
@@ -58,4 +59,9 @@ public class Order {
     }
 
     //endregion
+
+    @Override
+    public String toString() {
+        return "Date: " + orderDate + "\nCost: " + orderCost;
+    }
 }

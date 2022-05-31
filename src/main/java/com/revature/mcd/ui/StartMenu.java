@@ -1,12 +1,12 @@
 package com.revature.mcd.ui;
 
 import com.revature.mcd.daos.LocationDAO;
-import com.revature.mcd.daos.ProductDAO;
+import com.revature.mcd.daos.OrderDAO;
 import com.revature.mcd.daos.UserDAO;
 import com.revature.mcd.models.Location;
 import com.revature.mcd.models.User;
 import com.revature.mcd.services.LocationService;
-import com.revature.mcd.services.ProductService;
+import com.revature.mcd.services.OrderService;
 import com.revature.mcd.services.UserService;
 import com.revature.mcd.util.annotations.Inject;
 import com.revature.mcd.util.custom_exceptions.InvalidUserException;
@@ -93,8 +93,8 @@ public class StartMenu implements IMenu {
                     if (user.getClearanceLevel() > 0)
                         new AdminMenu(user,
                                 new UserService(new UserDAO()),
-                                new LocationService(new LocationDAO())).start();
-                    else new MainMenu(user).start();
+                                new LocationService(new LocationDAO()), new OrderService(new OrderDAO())).start();
+                    else new MainMenu(user, userService, locationService, new OrderService(new OrderDAO())).start();
                     break;
             } catch (InvalidUserException e) {
                 System.out.println(e.getMessage());
@@ -233,7 +233,7 @@ public class StartMenu implements IMenu {
 
                                 /* Calling the anonymous class MainMenu.start() to navigate to the main menu screen. */
                                 /* We are also passing in a user object, so we know who is logged in. */
-                                new MainMenu(user).start();
+                                new MainMenu(user, userService, locationService, new OrderService(new OrderDAO())).start();
 
                                 /* Break out of the entire loop. */
                                 break completeExit;

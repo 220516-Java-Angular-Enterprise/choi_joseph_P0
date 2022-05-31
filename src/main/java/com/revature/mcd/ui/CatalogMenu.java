@@ -74,6 +74,10 @@ public class CatalogMenu implements IMenu{
                 try{
                     System.out.print("Enter quantity to add to cart: ");
                     int quantity = Integer.parseInt(scanner.nextLine());
+                    while(quantity < 1){
+                        System.out.print("Quantity purchased must be greater than 0: ");
+                        quantity = Integer.parseInt(scanner.nextLine());
+                    }
                     if(productIDs.contains(input)){
                         Product product = productService.getByID(input);
                         Cart cart = new Cart(UUID.randomUUID().toString(), quantity,

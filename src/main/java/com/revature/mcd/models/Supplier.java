@@ -34,4 +34,10 @@ public class Supplier {
         this.supplierName = supplierName;
     }
     //endregion
+
+
+    @Override
+    public String toString() {
+        return supplierName;
+    }
 }

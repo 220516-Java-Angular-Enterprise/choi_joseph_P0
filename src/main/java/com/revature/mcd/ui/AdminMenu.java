@@ -2,14 +2,14 @@ package com.revature.mcd.ui;
 
 import com.revature.mcd.daos.ProductDAO;
 import com.revature.mcd.daos.SupplierDAO;
+import com.revature.mcd.daos.SupplierOrderDAO;
 import com.revature.mcd.models.Location;
+import com.revature.mcd.models.Order;
 import com.revature.mcd.models.User;
-import com.revature.mcd.services.LocationService;
-import com.revature.mcd.services.ProductService;
-import com.revature.mcd.services.SupplierService;
-import com.revature.mcd.services.UserService;
+import com.revature.mcd.services.*;
 import com.revature.mcd.util.annotations.Inject;
 
+import java.util.List;
 import java.util.Scanner;
 import java.util.UUID;
 
@@ -19,12 +19,14 @@ public class AdminMenu implements IMenu{
     private final User user;
     private final UserService userService;
     private final LocationService locationService;
+    private final OrderService orderService;
 
     @Inject
-    public AdminMenu(User user, UserService userService, LocationService locationService){
+    public AdminMenu(User user, UserService userService, LocationService locationService, OrderService orderService){
         this.user = user;
         this.userService = userService;
         this.locationService = locationService;
+        this.orderService = orderService;
     }
 
     @Override
@@ -41,8 +43,9 @@ public class AdminMenu implements IMenu{
                         findCustomer();
                         break;
                     case "2":
-                        new SupplierMenu(new SupplierService(new SupplierDAO()),
-                                new ProductService(new ProductDAO())).start();
+                        new SupplierMenu(userService, new SupplierService(new SupplierDAO()),
+                                new ProductService(new ProductDAO()), orderService,
+                                new SupplierOrderService(new SupplierOrderDAO())).start();
                         break;
                     case "x":
                         break exit;
@@ -142,8 +145,8 @@ public class AdminMenu implements IMenu{
                                         userService.changeUserInfo(user);
                                     }
 
-                                    System.out.println("\nCountry of Residence set to: " + location.getCountry());
-                                    System.out.println("\nCity of Residence set to: " + location.getCity());
+                                    System.out.println("\nCountry of Residence set to: " + country);
+                                    System.out.println("\nCity of Residence set to: " + city);
                                     break exit;
                                 }
                                 else{
@@ -151,7 +154,8 @@ public class AdminMenu implements IMenu{
                                     break exit;
                                 }
                             case "4":
-                                break;
+                                viewCustomerOrderHistory(user);
+                                break exit;
                             case "x":
                                 break exit;
                             default:
@@ -176,6 +180,28 @@ public class AdminMenu implements IMenu{
             displayCustomerMenu(user);
         } catch(NullPointerException e){
             System.out.println("A User with that username does not exist.");
+        }
+    }
+
+    private void viewCustomerOrderHistory(User user){
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("\nViewing " + user.getUsername() +
+                "'s Order History. Press \"x\" to exit.");
+        List<Order> orders = orderService.getOrdersByUserID(user.getId());
+        for(Order order: orders){
+            System.out.println("\n" + order);
+        }
+        exit:{
+            while(true){
+                System.out.print("\nEnter: ");
+                String input = scanner.nextLine();
+                switch(input){
+                    case "x":
+                        break exit;
+                    default:
+                        System.out.println("Invalid input.");
+                }
+            }
         }
     }
 }
